@@ -1,0 +1,32 @@
+{
+    "AWSEBDockerrunVersion": 2,
+    "volumes": [
+      {
+        "name": "backend",
+        "host": {
+          "sourcePath": "/app"
+        }
+      }
+    ],
+    "containerDefinitions": [
+      {
+        "name": "backend",
+        "image": "363239913720.dkr.ecr.ap-northeast-2.amazonaws.com/ecrkga:latest",
+        "environment": [
+          {
+            "name": "NODE_NEV",
+            "value": "production"
+          }
+        ],
+        "essential": true,
+        "memory": 128,
+        "portMappings": [
+          {
+            "containerPort": 3000,
+            "hostPort": 80
+          }
+        ]
+      }
+    ]
+  }
+  

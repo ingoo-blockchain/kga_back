@@ -1,0 +1,80 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      # actions/checkout 은  Workflow에 접근 할수 있도록 레포지토리를 체크아웃하는데 사용되는 공식 github 작업
+      # checkout : 저장소 에서 파일을 받아오는것
+      # checkin 체크아웃으로 받아온 파일을 수정 후, 저장소 를 새로운버전으로 갱신하는것
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-region: ap-northeast-2
+
+      # AWS 자격을 증명하는 것 AWS IAM 사용자의 `Access Key` 와 `Secret Key`를 넣으면 됩니다.
+      # 외부에 노출되지 않도록 Github Secrets 을 활용
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ecrkga
+          IMAGE_TAG: ${{github.sha}}
+        run: |
+          docker buildx build --platform=linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      # 로컬 Docker 클라이언트에서 하나 이상의 Amazon ECR 레지스트리에 로그인
+      # 도커 이미지로 빌드하고, ECR 레포지토리 push
+      # AWS EB로 생성되는 EC2는 `linux/amd64` 환경 (맥북 m1 고려)
+
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYMMDD_HH-mm-ss
+          utcOffset: '+09:00'
+
+      # 우리나라 시간은 UTC 기준으로 9 시간 빠르기 때문에 +09:00 더함.
+
+      - name: Generate deployment package
+        run: |
+          mkdir deploy
+          cp Dockerrun.aws.json deploy/Dockerrun.aws.json
+          cd deploy && zip -r deploy.zip .
+
+      # cp -r .ebextensions deploy/.ebextensions
+      # Dockerrun.aws.json 파일을 zip 파일로 만드는 과정
+
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: EB_KGA
+          environment_name: Ebkga-env
+          version_label: earth-docker-${{ steps.current-time.outputs.formattedTime }}
+          region: ap-northeast-2
+          deployment_package: deploy/deploy.zip
+          wait_for_environment_recovery: 200
+
+      # 아까 생성한 zip 파일을 AWS EB에 업로드 및 배포하는 과정.
+
+      # 도커 환경의 AWS EB를 만들고 애플리케이션에 업로드 및 배포를 하려면 아래 사진의
+      # `업로드 및 배포` 를 클릭해 Dockerrun.aws.json 를 압축한 파일을 올리면 된다.
