@@ -1,7 +1,4 @@
-# AWS EB + Docker + Actions 를 활용한 CI 구현 
-
-## 2023-02-03
-> 나중에 Actions 를 활용해서 CD 도 구현할 예정 
+# AWS EB + Docker + Actions 를 활용한 CI/CD 구현 
 
 ECR 배포까지 테스트 완료.
 
@@ -25,7 +22,7 @@ version1 은 쉽게 설정 가능해서 바꿔보자.
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "363239913720.dkr.ecr.ap-northeast-2.amazonaws.com/ecrkga:latest",
+    "Name": "363239913720.dkr.ecr.ap-northeast-2.amazonaws.com/ecskga:cef6c01eef9237c1f86e0619264880703719fe5a",
     "Update": "true"
   },
   "Ports": [
