@@ -75,3 +75,52 @@ Docker image 를 가져오지 못하는 오류를 발생함
 인스턴스 프로파일의 IAM 역활에 s3:GetObject 권한이 없을 확률 있다고 함.
 
 AmazonS3ReadOnlyAccess 역활을 줘보도록함.
+
+## Amazon ECR 리포지토리 의 이미지 사용
+
+ECR 를 사용할려면 AWS에서 사용자 지정 Docker Image를 저장할수있습니다.
+
+Amazon ECR에 Docker 이미지를 저장하면 Elastic Beanstalk는 환경의 인스턴스 프로파일을 사용하여 Amazon ECR 레지스트리에 자동으로 인증하므로, 인증 파일을  생성하고 이를 Amazon Simple Storage Service (Amazon S3) 에 업로드할 필요가 없슴
+
+그러나 환경의 인스턴스 프로파일에 권한을 추가하여
+Amazon ECR 리포지토리의 이미지에 엑세스할 권한이 있는 인스턴스를 제공해야함.
+
+AmazonEC2ContainerRegistryReadOnly 관리형 정책을 인스턴스 프로파일에 연결하여 계정의 모든 Amazon ECR 리포지토리에 읽기 전용 엑세스 권한을 제공해줘야 할거같음.
+
+아니면
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "AllowEbAuth",
+        "Effect": "Allow",
+        "Action": [
+          "ecr:GetAuthorizationToken"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Sid": "AllowPull",
+        "Effect": "Allow",
+        "Resource": [
+          "arn:aws:ecr:us-east-2:account-id:repository/repository-name"
+        ],
+        "Action": [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:BatchGetImage"
+        ]
+      }
+    ]
+  }
+```
+
+이런 형태로 추가된 권한을 주거나..
