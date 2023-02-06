@@ -124,3 +124,9 @@ AmazonEC2ContainerRegistryReadOnly 관리형 정책을 인스턴스 프로파일
 ```
 
 이런 형태로 추가된 권한을 주거나..
+
+ㅇ...왜..안됨..?
+
+AmazonEC2ContainerRegistryFullAccess 이걸로 바꿔서..
+
+
