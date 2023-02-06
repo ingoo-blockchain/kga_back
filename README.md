@@ -70,4 +70,8 @@ version1 은 쉽게 설정 가능해서 바꿔보자.
   
 ```
 
-aa
+
+Docker image 를 가져오지 못하는 오류를 발생함
+인스턴스 프로파일의 IAM 역활에 s3:GetObject 권한이 없을 확률 있다고 함.
+
+AmazonS3ReadOnlyAccess 역활을 줘보도록함.
