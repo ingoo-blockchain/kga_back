@@ -1,8 +1,7 @@
 {
     "AWSEBDockerrunVersion": "1",
     "Image": {
-        "Name": "363239913720.dkr.ecr.ap-northeast-2.amazonaws.com/ecskga:latest",
-        "Update": "true"
+        "Name": "363239913720.dkr.ecr.ap-northeast-2.amazonaws.com/ecskga:latest"
     },
     "Ports": [
         {
