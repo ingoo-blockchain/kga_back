@@ -129,4 +129,5 @@ AmazonEC2ContainerRegistryReadOnly 관리형 정책을 인스턴스 프로파일
 
 AmazonEC2ContainerRegistryFullAccess 이걸로 바꿔서..
 
+근본적으로 잘못되었다..정말로 .. 왜 왜 왜 안됨 ..?
 
