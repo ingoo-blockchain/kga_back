@@ -1,0 +1,40 @@
+name: Pull request
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  docker:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      # 해당 저장소의 코드를 가져옵니다.
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # docker-compose를 활용해 테스트를 위한 컨테이너 환경을 구성합니다.
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" up -d --build
+
+      - name: install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+      
+      - name: install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm run test
+
+      - name: stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" down
