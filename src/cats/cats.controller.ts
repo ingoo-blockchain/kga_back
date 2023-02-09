@@ -1,7 +1,13 @@
-import { Body, Controller,Delete,Get,Header,HttpCode,Param,Post,Put,Query,Redirect,Req } from '@nestjs/common';
+import {Body, Controller,Delete,Get,Header,HttpCode,HttpException,Param,Post,Put,Query,Redirect,HttpStatus, ParseIntPipe, UsePipes } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto, ListAllEntities, UpdateCatDto } from './dto/index.dto';
 import { Cat } from './interfaces/cats.interface';
+
+class ForbiddenException extends HttpException {
+    constructor() {
+        super('Forbidden', HttpStatus.FORBIDDEN)
+    }
+}
 
 @Controller('cats')
 export class CatsController {
@@ -21,9 +27,14 @@ export class CatsController {
         return this.catsService.findAll()
     }
 
+    @Get('error')
+    error(){
+        throw new ForbiddenException()
+    }
+
     @Get(':id')
-    findOne(@Param('id') id:string):string {
-        console.log(id)
+    findOne(@Param('id', ParseIntPipe) id: number):string {
+        console.log(id+1)
         return `This action returns a #${id} cat`
     }
 
@@ -45,4 +56,6 @@ export class CatsController {
             return {url:'https://naver.com'}
         }
     }
+
+    
 }
