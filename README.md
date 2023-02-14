@@ -125,9 +125,34 @@ AmazonEC2ContainerRegistryReadOnly 관리형 정책을 인스턴스 프로파일
 
 이런 형태로 추가된 권한을 주거나..
 
-ㅇ...왜..안됨..?
 
-AmazonEC2ContainerRegistryFullAccess 이걸로 바꿔서..
+## CLI 
+```
+nest g module modules/main
+nest g controller modules/main
+nest g service modules/main
+```
 
-근본적으로 잘못되었다..정말로 .. 왜 왜 왜 안됨 ..?
+## Swagger
+-- 처리완료
+
+## Logger
+
+CloudWatch logs..? 
+
+
+
+```
+npm install nest-winston winston winston-daily-rotate-file
+```
+
+
+## ConfigModule 
+
+## TypeORM 
+
+```
+npm install mysql2 typeorm @nestjs/typeorm
+```
+
 
